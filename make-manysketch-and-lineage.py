@@ -83,6 +83,8 @@ def main():
         with_taxids = set(genomeacc_to_taxid)
         with_seqacc = set(seqacc_to_genomeacc.values())
         print(with_seqacc - with_taxids)
+    else:
+        print('Found all taxids. Proceeding with confidence!!')
 
     # finally, integrate it all
     acc_to_lin = {}
