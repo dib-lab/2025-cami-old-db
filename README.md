@@ -84,3 +84,26 @@ aaaaaand... build!
 ```
 sourmash scripts manysketch manysketch.csv -p k=21,k=31,k=51,dna -p skipm1n3 -p skipm2n3 -o cami-refseq-db.sig.zip
 ```
+
+## Examine the results:
+
+```
+sourmash sig summarize cami-refseq-db.sig.zip
+```
+
+should show:
+```
+num signatures: 705715
+** examining manifest...
+total hashes: 3469770870
+summary of sketches:
+   141143 sketches with DNA, k=21, scaled=1000        579319798 total hashes
+   141143 sketches with DNA, k=31, scaled=1000        578226823 total hashes
+   141143 sketches with DNA, k=51, scaled=1000        579472574 total hashes
+   141143 sketches with skipm1n3, k=21, scaled=1000   576592042 total hashes
+   141143 sketches with skipm2n3, k=21, scaled=1000   1156159633 total hashes
+```
+and the lineages file should have 141,143 rows + 1 header in it:
+```
+wc -l lineages.csv
+```
