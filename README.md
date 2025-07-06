@@ -107,3 +107,8 @@ and the lineages file should have 141,143 rows + 1 header in it:
 ```
 wc -l lineages.csv
 ```
+
+## Note: missing sequence accessions
+
+We're missing sequence accessions and/or taxids for about 500 genomes total.
+About 200 missing sequence accessions, and about 300 missing taxids.
