@@ -25,26 +25,51 @@ tar xzf taxdump.tar.gz
 cd ..
 ```
 
-Grab accession2taxid:
+Grab accession2taxid from a bunch of places:
 ```
 curl -JLO https://openstack.cebitec.uni-bielefeld.de:8080/swift/v1/CAMI_2_DATABASES/ncbi_taxonomy_accession2taxid.tar
 cd ncbi_taxonomy
 tar xvf ../ncbi_taxonomy_accession2taxid.tar
+
+curl -JLO https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/wgs.accession2taxid.gz
+curl -JLO https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/dead_wgs.accession2taxid.gz
+curl -JLO https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/dead_nucl.accession2taxid.gz
+
+cd ../
 ```
 
 ## Extract NCBI lineages
 
-Based on scripts from https://github.com/dib-lab/2018-ncbi-lineages/:
+Based initially on scripts from https://github.com/dib-lab/2018-ncbi-lineages/.
 
 Make a list of the genomes:
 ```
 find genomes -type f > genome-list.txt
 ```
 
-Then run a script to make a manysketch output file and a lineages file:
+Then extract nucleotide accessions from the genomes:
 ```
-./make-manysketch-and-lineage.py genome-list.txt \
+./get-seq-acc-for-genomes.py genome-list.txt -o genome-list.accs.csv
+```
+
+Build a combined list of nucleotide accessions to taxids:
+```
+./tsv-to-parquet.py \
     ncbi_taxonomy/ncbi_taxonomy_accession2taxid/nucl_gb.accession2taxid.gz \
+    ncbi_taxonomy/wgs.accession2taxid.gz \
+    ncbi_taxonomy/dead_nucl.accession2taxid.gz \
+    ncbi_taxonomy/dead_wgs.accession2taxid.gz \
+        -o accession2taxid.parquet
+```
+
+Get the taxIDs for the sequence accessions from the genome list:
+```
+./join-seqacc-taxid.py genome-list.accs.csv accession2taxid.parquet -o genome-list.taxid.parquet
+```
+
+Finally, make lineage & manysketch files:
+```
+./make-manysketch-and-lineage.py genome-list.taxid.parquet genome-list.accs.csv \
     --nodes ncbi_taxonomy/nodes.dmp --names ncbi_taxonomy/names.dmp \
     --output-manysketch-csv manysketch.csv --output-lineage lineages.csv
 ```
