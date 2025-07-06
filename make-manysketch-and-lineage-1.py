@@ -11,26 +11,12 @@ import csv
 import ncbi_taxdump_utils
 
 
-want_taxonomy = ['superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'strain']
-
-
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('genome_file_list')
-    p.add_argument('acc2taxid_file')
-    p.add_argument('--nodes-dmp', required=True)
-    p.add_argument('--names-dmp', required=True)
-    p.add_argument('--output-manysketch-csv', required=True)
-    p.add_argument('--output-lineage-csv', required=True)
+    p.add_argument('-o', '--output', required=True,
+                   help='CSV file of genome accessions to contig accessions')
     args = p.parse_args()
-
-    # load taxdump stuff
-    print('loading taxdump')
-    taxfoo = ncbi_taxdump_utils.NCBI_TaxonomyFoo()
-
-    taxfoo.load_nodes_dmp(args.nodes_dmp)
-    taxfoo.load_names_dmp(args.names_dmp)
-
 
     # get list of genome files & assembly accessions (GCF/GCA)
     print('loading genome file info')
@@ -43,20 +29,28 @@ def main():
         acc = '_'.join(x)         # make back into GCF_XYZ string
         genome_acc_to_filename[acc] = filename
 
+    fp = open(args.output, 'w', newline='')
+    w = csv.writer(fp)
+    w.writerow(['genome_acc', 'seq_acc'])
+
     # build mapping from first sequence id => taxid
     seqacc_to_genomeacc = {}
     for n, (genome_acc, filename) in enumerate(genome_acc_to_filename.items()):
         if n % 100 == 0:
             print('reading genome', n, 'of', len(genome_acc_to_filename))
+
         # get first seq ID
         for record in screed.open(filename):
             name = record.name
             seqacc = name.split(' ')[0]
             seqacc_to_genomeacc[seqacc] = genome_acc
+            w.writerow([genome_acc, seqacc])
             break
 
     print(f'found {len(seqacc_to_genomeacc)} accessions, yay.')
     assert len(seqacc_to_genomeacc) == len(genome_acc_to_filename)
+
+    sys.exit(0)
 
     # now, get the info from the accession2taxid file
     genomeacc_to_taxid = {}
