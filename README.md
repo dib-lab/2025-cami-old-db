@@ -38,6 +38,12 @@ curl -JLO https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/dead_nucl.ac
 cd ../
 ```
 
+## Allocate resources
+
+```
+srun -p high2 --time=48:00:00 --nodes=1 --cpus-per-task=64 --mem=80GB --pty /bin/bash
+```
+
 ## Extract NCBI lineages
 
 Based initially on scripts from https://github.com/dib-lab/2018-ncbi-lineages/.
@@ -72,4 +78,9 @@ Finally, make lineage & manysketch files:
 ./make-manysketch-and-lineage.py genome-list.taxid.parquet genome-list.accs.csv \
     --nodes ncbi_taxonomy/nodes.dmp --names ncbi_taxonomy/names.dmp \
     --output-manysketch-csv manysketch.csv --output-lineage lineages.csv
+```
+
+aaaaaand... build!
+```
+sourmash scripts manysketch manysketch.csv -p k=21,k=31,k=51,dna -p skipm1n3 -p skipm2n3 -o cami-refseq-db.sig.zip
 ```
