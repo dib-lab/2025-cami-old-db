@@ -59,6 +59,8 @@ def main():
 
     n_written = 0
     seen = set()
+    missing_taxid_info = []
+
     for row in accs_to_taxid.iter_rows(named=True):
         acc = row['genome_acc']
         taxid = row['taxid']
@@ -80,6 +82,7 @@ def main():
         else:
             name = f"{acc}"
             print(f'WARNING for {acc} - no species or strain for taxid {taxid}')
+            missing_taxid_info.append(acc)
             continue
 
         seen.add(acc)
@@ -95,10 +98,21 @@ def main():
     print(f'wrote {n_written} rows to manysketch & lineage CSVs')
 
     expected_genome_accs = set(genome_acc_to_filename)
-    missing = expected_genome_accs - seen
-    print(f'missing: {len(missing)}')
-    print(list(missing)[:5])
-    print(list(expected_genome_accs)[:5])
+    missing_genomes= expected_genome_accs - seen
+    print(f'missing information for {len(missing_genomes)} genomes.')
+
+    if missing_genomes:
+        filename = 'report.missing-info-genomes.txt'
+        with open(filename, 'wt') as fp:
+            print("\n".join(missing_genomes), file=fp)
+        print(f"wrote list of missing genomes to '{filename}'")
+        print('(this list includes any genomes missing taxinfo, output next')
+
+    if missing_taxid_info:
+        filename = 'report.missing-taxid-info.txt'
+        with open(filename, 'wt') as fp:
+            print("\n".join(missing_taxid_info), file=fp)
+        print(f"wrote list of genomes missing taxinfo to '{filename}'")
 
  
 if __name__ == '__main__':

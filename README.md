@@ -75,7 +75,7 @@ Get the taxIDs for the sequence accessions from the genome list:
 
 Finally, make lineage & manysketch files:
 ```
-./make-manysketch-and-lineage.py genome-list.taxid.parquet genome-list.accs.csv \
+./make-manysketch-and-lineage.py genome-list.taxid.parquet genome-list.txt \
     --nodes ncbi_taxonomy/nodes.dmp --names ncbi_taxonomy/names.dmp \
     --output-manysketch-csv manysketch.csv --output-lineage lineages.csv
 ```
