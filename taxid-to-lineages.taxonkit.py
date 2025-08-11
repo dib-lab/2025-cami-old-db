@@ -15,15 +15,14 @@ def taxonkit_get_lineages_as_dict(taxidlist, ranks=WANT_TAXONOMY, formatstr=RANK
     n_failed = 0
     taxinfo = {}
     try:
-        #tk_lineage = pytaxonkit.lineage(taxidlist, formatstr=formatstr, threads=2, data_dir=data_dir) # , data_dir='.') use this to use this taxonomic data. BUT doesn't have 'strain' rank
-        tk_lineage = pytaxonkit.lineage(taxidlist, fill_missing=True, pseudo_strain=True, formatstr=formatstr, threads=2, data_dir=data_dir) # , data_dir='.') use this to use this taxonomic data. BUT doesn't have 'strain' rank
+        #tk_lineage = pytaxonkit.lineage(taxidlist, formatstr=formatstr, threads=2, data_dir=data_dir)
+        tk_lineage = pytaxonkit.lineage(taxidlist, fill_missing=True, pseudo_strain=True, formatstr=formatstr, threads=2, data_dir=data_dir)
     except Exception as e:
         print(f"ERROR: Failed to retrieve lineage data with taxonkit: {e}")
         return taxinfo, len(taxidlist)
     
     for taxid in taxidlist:
         taxid_row = tk_lineage[tk_lineage['TaxID'] == taxid]
-        # import pdb; pdb.set_trace()  # Debugging breakpoint
         if not taxid_row.empty:
             try:
                 lin = taxid_row.iloc[0]['Lineage']
@@ -33,7 +32,7 @@ def taxonkit_get_lineages_as_dict(taxidlist, ranks=WANT_TAXONOMY, formatstr=RANK
                     continue
                 names = lin.split(';')
                 taxpath = taxid_row.iloc[0]['LineageTaxIDs'].replace(';', '|')
-                # for taxonkit 0.20 and later:
+                # for taxonkit 0.20 and later, use instead:
                 #names = lin.split(';')[1:] # skip "cellular organisms" prefix
                 #taxpath = '|'.join(taxid_row.iloc[0]['LineageTaxIDs'].split(';')[1:])
             except KeyError as e:
@@ -100,7 +99,7 @@ def main(args):
                         continue
                     if lin_name != lineage_col:
                         mismatches += 1
-                        # print warning. Note that most of these mismatches are due to the 'strain' rank being different or missing.
+                        # print warning. Note that most of these mismatches are minimal and just due to stain info or level of detail
                         print(f"WARNING: taxid {taxid} (ident {ident}) mismatch: {lin_name} != {lineage_col}")
 
             w.writerow([ident, taxid, taxpath, *lin_names])
