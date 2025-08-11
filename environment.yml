@@ -1,0 +1,11 @@
+name: cami-db
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - numpy
+  - taxonkit=0.18
+  - pytaxonkit=0.9.1
+  #- taxonkit>=0.20,<1
+  #- pytaxonkit>=0.10,<1 

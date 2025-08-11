@@ -19,7 +19,7 @@ cd ../
 Grab taxonomy:
 ```
 curl -JLO https://openstack.cebitec.uni-bielefeld.de:8080/swift/v1/CAMI_2_DATABASES/ncbi_taxonomy.tar
-tar tvf ncbi_taxonomy.tar
+tar xvf ncbi_taxonomy.tar
 cd ncbi_taxonomy
 tar xzf taxdump.tar.gz
 cd ..
@@ -85,6 +85,28 @@ aaaaaand... build!
 sourmash scripts manysketch manysketch.csv -p k=21,k=31,k=51,dna -p skipm1n3 -p skipm2n3 -o cami-refseq-db.sig.zip
 ```
 
+## Add taxpath to lineages file
+
+A full `taxpath` is required for outputting `bioboxes` format from sourmash for CAMI II comparisons.
+Here, we use `taxonkit` to add taxpath information to the lineages file.
+
+To install `taxonkit` and its python bindings (`pytaxonkit`), you can use the conda `environment.yml` file provided in this repository.
+
+```
+conda env create -f environment.yml
+conda activate cami-db
+```
+
+Then, run the script to convert taxids to lineages:
+
+
+```
+./taxid-to-lineages.taxonkit.py lineages.csv \
+    --data-dir ./ncbi_taxonomy \
+    -o lineages.taxpath.csv
+```
+
+
 ## Examine the results:
 
 ```
@@ -105,7 +127,7 @@ summary of sketches:
 ```
 and the lineages file should have 141,143 rows + 1 header in it:
 ```
-wc -l lineages.csv
+wc -l lineages.taxpath.csv
 ```
 
 ## Note: missing sequence accessions
