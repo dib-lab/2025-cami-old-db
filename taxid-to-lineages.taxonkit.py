@@ -15,8 +15,8 @@ def taxonkit_get_lineages_as_dict(taxidlist, ranks=WANT_TAXONOMY, formatstr=RANK
     n_failed = 0
     taxinfo = {}
     try:
-        #tk_lineage = pytaxonkit.lineage(taxidlist, formatstr=formatstr, threads=2, data_dir=data_dir)
         tk_lineage = pytaxonkit.lineage(taxidlist, fill_missing=True, pseudo_strain=True, formatstr=formatstr, threads=2, data_dir=data_dir)
+        #tk_lineage = pytaxonkit.lineage(taxidlist, formatstr=formatstr, threads=2, data_dir=data_dir) #for taxonkit >=0.20
     except Exception as e:
         print(f"ERROR: Failed to retrieve lineage data with taxonkit: {e}")
         return taxinfo, len(taxidlist)
